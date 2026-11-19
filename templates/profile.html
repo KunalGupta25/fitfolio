@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Profile — fitFolio{% endblock %}
+{% block page_title %}Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-8">
+
+  <!-- ============================================================
+       PERSONAL INFO CARD
+  ============================================================ -->
+  <section class="bg-white border border-slate-200 rounded-lg p-6">
+    <h2 class="text-base font-semibold text-slate-800 mb-5">Personal Info</h2>
+
+    <form
+      hx-post="/profile/personal"
+      hx-swap="outerHTML"
+      class="space-y-4"
+    >
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        <div>
+          <label for="full_name" class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+          <input
+            type="text" id="full_name" name="full_name"
+            value="{{ personal_info.full_name | default('') }}"
+            class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Jane Smith"
+          />
+        </div>
+
+        <div>
+          <label for="phone" class="block text-sm font-medium text-slate-700 mb-1">Phone</label>
+          <input
+            type="tel" id="phone" name="phone"
+            value="{{ personal_info.phone | default('') }}"
+            class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="+1 (555) 000-0000"
+          />
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+          <input
+            type="email" id="email" name="email"
+            value="{{ personal_info.email | default('') }}"
+            class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="jane@example.com"
+          />
+        </div>
+
+        <div>
+          <label for="linkedin" class="block text-sm font-medium text-slate-700 mb-1">LinkedIn Handle</label>
+          <div class="flex items-center border border-slate-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
+            <span class="bg-slate-50 text-slate-400 text-sm px-3 py-2 border-r border-slate-300 shrink-0">linkedin.com/in/</span>
+            <input
+              type="text" id="linkedin" name="linkedin"
+              value="{{ personal_info.linkedin | default('') }}"
+              class="flex-1 px-3 py-2 text-sm focus:outline-none"
+              placeholder="jane-smith"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="github" class="block text-sm font-medium text-slate-700 mb-1">GitHub Handle</label>
+          <div class="flex items-center border border-slate-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
+            <span class="bg-slate-50 text-slate-400 text-sm px-3 py-2 border-r border-slate-300 shrink-0">github.com/</span>
+            <input
+              type="text" id="github" name="github"
+              value="{{ personal_info.github | default('') }}"
+              class="flex-1 px-3 py-2 text-sm focus:outline-none"
+              placeholder="jane-smith"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="portfolio" class="block text-sm font-medium text-slate-700 mb-1">Portfolio URL</label>
+          <input
+            type="url" id="portfolio" name="portfolio"
+            value="{{ personal_info.portfolio | default('') }}"
+            class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="https://jane.dev"
+          />
+        </div>
+
+        <div>
+          <label for="city" class="block text-sm font-medium text-slate-700 mb-1">City</label>
+          <input
+            type="text" id="city" name="city"
+            value="{{ personal_info.city | default('') }}"
+            class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="San Francisco"
+          />
+        </div>
+
+        <div>
+          <label for="state" class="block text-sm font-medium text-slate-700 mb-1">State</label>
+          <input
+            type="text" id="state" name="state"
+            value="{{ personal_info.state | default('') }}"
+            class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="CA"
+          />
+        </div>
+
+      </div>
+
+      <div class="pt-2 flex items-center gap-4">
+        <button
+          type="submit"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors">
+          Save Personal Info
+        </button>
+        <span class="htmx-indicator text-xs text-slate-500">Saving…</span>
+      </div>
+
+    </form>
+  </section>
+
+  <!-- ============================================================
+       BIO / SUMMARY CARD
+  ============================================================ -->
+  <section class="bg-white border border-slate-200 rounded-lg p-6">
+    <h2 class="text-base font-semibold text-slate-800 mb-1">Your Professional Bio</h2>
+    <p class="text-xs text-slate-500 mb-5">
+      Write who you are in plain English. fitFolio's AI will rewrite this for each job description.
+    </p>
+
+    <form
+      hx-post="/profile/summary"
+      hx-swap="outerHTML"
+      class="space-y-4"
+    >
+      <div>
+        <label for="raw_bio" class="block text-sm font-medium text-slate-700 mb-1">Bio / Summary</label>
+        <textarea
+          id="raw_bio" name="raw_bio" rows="10"
+          class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"
+          placeholder="I'm a backend engineer with 4 years of experience building scalable APIs. I love Python, distributed systems, and open source…"
+        >{{ raw_bio | default('') }}</textarea>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button
+          type="submit"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors">
+          Save Bio
+        </button>
+        <span class="htmx-indicator text-xs text-slate-500">Saving…</span>
+      </div>
+
+    </form>
+  </section>
+
+</div>
+{% endblock %}

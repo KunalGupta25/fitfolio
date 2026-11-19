@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+aiosqlite
+jinja2
+python-multipart
+python-dotenv
+fastmcp
+google-generativeai
+httpx
+aiofiles
+pydantic-settings

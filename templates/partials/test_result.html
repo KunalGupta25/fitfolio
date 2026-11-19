@@ -1,0 +1,29 @@
+<div class="p-4 rounded-lg border mb-6 space-y-2 {% if result.passed %}bg-emerald-50 border-emerald-200 text-emerald-900{% else %}bg-amber-50 border-amber-200 text-amber-900{% endif %}">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="text-lg">{% if result.passed %}🎉{% else %}⚠️{% endif %}</span>
+      <h4 class="text-sm font-bold">
+        {% if result.passed %}
+          Test Passed! ({{ result.overall_score | round(1) }}%)
+        {% else %}
+          Test Incomplete / Failed ({{ result.overall_score | round(1) }}%)
+        {% endif %}
+      </h4>
+    </div>
+    <button onclick="this.closest('div.p-4').remove()" class="text-xs opacity-60 hover:opacity-100">✕ Close</button>
+  </div>
+
+  <p class="text-xs">
+    {% if result.feedback %}
+      {{ result.feedback }}
+    {% endif %}
+  </p>
+
+  <p class="text-[11px] opacity-75">
+    {% if result.passed %}
+      Skill is now marked as <strong>Validated ✅</strong> in your database and will be prioritized in resumes.
+    {% else %}
+      Skill remains marked as <strong>Self-Reported ○</strong>. You can retake the test anytime.
+    {% endif %}
+  </p>
+</div>

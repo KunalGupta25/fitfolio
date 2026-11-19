@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Certifications — fitFolio{% endblock %}
+{% block page_title %}Certifications{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-8" x-data="{ showAddModal: false }">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-base font-semibold text-slate-800">Certifications & Credentials</h2>
+      <p class="text-xs text-slate-500 mt-0.5">Verified certificates from NVIDIA, AWS, Coursera, etc.</p>
+    </div>
+    <button
+      @click="showAddModal = true"
+      class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-2 rounded-md transition-colors flex items-center gap-1.5 shadow-sm"
+    >
+      <span>+ Add Certification</span>
+    </button>
+  </div>
+
+  <!-- Certifications List -->
+  <div id="certifications-list" class="space-y-3">
+    {% if certifications %}
+      {% for cert in certifications %}
+        <div id="cert-{{ cert.id }}" class="bg-white border border-slate-200 rounded-lg p-4 shadow-sm flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">
+              {{ cert.name }}
+              {% if cert.url %}
+                <a href="{{ cert.url }}" target="_blank" class="text-indigo-600 font-normal text-xs ml-1 hover:underline">↗</a>
+              {% endif %}
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">
+              {{ cert.issuer }}{% if cert.issued_date %} · {{ cert.issued_date }}{% endif %}
+            </p>
+          </div>
+
+          <button
+            hx-delete="/certifications/{{ cert.id }}"
+            hx-target="#cert-{{ cert.id }}"
+            hx-swap="outerHTML"
+            hx-confirm="Delete this certification?"
+            class="text-slate-400 hover:text-red-500 text-xs px-2 py-1 rounded transition-colors"
+          >
+            ✕ Delete
+          </button>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div id="no-cert-msg" class="bg-white border border-slate-200 rounded-lg p-8 text-center text-slate-400">
+        <p class="text-sm">No certifications added yet.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Add Modal -->
+  <div
+    x-show="showAddModal"
+    x-cloak
+    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
+    @keydown.escape.window="showAddModal = false"
+  >
+    <div
+      @click.away="showAddModal = false"
+      class="bg-white border border-slate-200 rounded-xl shadow-xl max-w-md w-full p-6 space-y-4"
+    >
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-sm font-semibold text-slate-800">Add Certification</h3>
+        <button @click="showAddModal = false" class="text-slate-400 hover:text-slate-600 text-sm">✕</button>
+      </div>
+
+      <form
+        hx-post="/certifications"
+        hx-target="#certifications-list"
+        hx-swap="beforeend"
+        @htmx:after-request="showAddModal = false; const msg = document.getElementById('no-cert-msg'); if (msg) msg.remove();"
+        class="space-y-3"
+      >
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Certification Name *</label>
+          <input
+            type="text" name="name" required placeholder="e.g. Building RAG Agents with LLMs"
+            class="w-full border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Issuer / Organization *</label>
+          <input
+            type="text" name="issuer" required placeholder="e.g. NVIDIA, AWS, Coursera"
+            class="w-full border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Issued Date</label>
+          <input
+            type="text" name="issued_date" placeholder="e.g. Sep. 2025"
+            class="w-full border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Verification URL</label>
+          <input
+            type="url" name="url" placeholder="https://..."
+            class="w-full border border-slate-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button
+            type="button" @click="showAddModal = false"
+            class="border border-slate-300 text-slate-700 text-xs px-3 py-1.5 rounded-md hover:bg-slate-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-4 py-1.5 rounded-md transition-colors"
+          >
+            Save Certification
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

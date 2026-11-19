@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — fitFolio{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8">
+
+  <!-- ============================================================
+       PROFILE COMPLETENESS
+  ============================================================ -->
+  <section>
+    <h2 class="text-base font-semibold text-slate-700 mb-4">Profile Completeness</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      {% set checks = [
+        ("👤", "Personal Info",          completeness.personal_info,    "/profile"),
+        ("📝", "Bio / Summary",          completeness.summary,          "/profile"),
+        ("⚡", "Skills (at least 3)",    completeness.skills,           "/skills"),
+        ("✅", "Validated Skill (≥1)",   completeness.validated_skill,  "/skills"),
+        ("📁", "Projects (with bullets)",completeness.projects,         "/projects"),
+        ("🎓", "Education",              completeness.education,        "/education"),
+      ] %}
+
+      {% for icon, label, done, link in checks %}
+      <div class="bg-white border border-slate-200 rounded-lg p-4 flex items-center gap-4">
+        <span class="text-2xl leading-none">{{ icon }}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-slate-800 truncate">{{ label }}</p>
+        </div>
+        {% if done %}
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+            ✓ Complete
+          </span>
+        {% else %}
+          <a href="{{ link }}" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 hover:bg-amber-200 transition-colors">
+            Incomplete →
+          </a>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       QUICK STATS
+  ============================================================ -->
+  <section>
+    <h2 class="text-base font-semibold text-slate-700 mb-4">Quick Stats</h2>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {% set stat_items = [
+        ("Total Skills",      stats.total_skills),
+        ("Validated Skills",  stats.validated_skills),
+        ("Projects",          stats.projects),
+        ("Certifications",    stats.certifications),
+      ] %}
+      {% for label, value in stat_items %}
+      <div class="bg-white border border-slate-200 rounded-lg p-5 text-center">
+        <p class="text-3xl font-bold text-indigo-600">{{ value }}</p>
+        <p class="text-xs text-slate-500 mt-1">{{ label }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ============================================================
+       GENERATE RESUME CTA
+  ============================================================ -->
+  <section>
+    {% set profile_complete = completeness.personal_info and completeness.summary and completeness.skills and completeness.projects and completeness.education %}
+
+    {% if profile_complete %}
+      <a href="/resume"
+         class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold text-sm hover:bg-indigo-700 transition-colors">
+        📄 Generate Resume
+      </a>
+    {% else %}
+      <div x-data="{ showTip: false }" class="relative inline-block">
+        <button
+          @mouseenter="showTip = true"
+          @mouseleave="showTip = false"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-slate-200 text-slate-400 rounded-lg font-semibold text-sm cursor-not-allowed select-none">
+          📄 Generate Resume
+        </button>
+        <div
+          x-show="showTip"
+          class="absolute left-0 bottom-full mb-2 w-72 bg-slate-800 text-white text-xs rounded-lg px-3 py-2 shadow-lg z-10">
+          Complete all profile sections to unlock resume generation.
+        </div>
+      </div>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

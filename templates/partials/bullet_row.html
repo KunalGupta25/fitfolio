@@ -1,0 +1,17 @@
+<li id="bullet-{{ bullet.id }}" class="flex items-start justify-between gap-3 text-xs text-slate-700 bg-slate-50 px-3 py-2 rounded border border-slate-100 group">
+  <div class="flex-1">
+    <span>• {{ bullet.bullet }}</span>
+    {% if bullet.keywords %}
+      <span class="block text-[10px] text-indigo-600 font-mono mt-0.5">[{{ bullet.keywords }}]</span>
+    {% endif %}
+  </div>
+  <button
+    hx-delete="/projects/bullets/{{ bullet.id }}"
+    hx-target="#bullet-{{ bullet.id }}"
+    hx-swap="outerHTML"
+    class="text-slate-300 hover:text-red-500 transition-colors text-xs opacity-0 group-hover:opacity-100 px-1"
+    title="Delete bullet"
+  >
+    ✕
+  </button>
+</li>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}fitFolio{% endblock %}</title>
+
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- HTMX 2.0 -->
+  <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+
+  <!-- Alpine.js 3.x -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- HTMX loading indicator style -->
+  <style>
+    #loading-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      width: 0%;
+      background: #6366f1;
+      transition: width 0.2s ease;
+      z-index: 9999;
+    }
+    .htmx-request #loading-bar { width: 70%; }
+    .htmx-settling #loading-bar { width: 100%; opacity: 0; transition: opacity 0.3s ease; }
+  </style>
+
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex" hx-boost="true">
+
+  <!-- Loading indicator -->
+  <div id="loading-bar"></div>
+
+  <!-- ============================================================
+       SIDEBAR
+  ============================================================ -->
+  <aside class="w-56 bg-slate-900 text-slate-100 flex flex-col fixed top-0 left-0 h-full z-40 shrink-0">
+
+    <!-- Logo -->
+    <div class="px-5 py-5 border-b border-slate-700">
+      <span class="text-indigo-400 font-bold text-xl tracking-tight">fit<span class="text-white">Folio</span></span>
+      <p class="text-xs text-slate-400 mt-0.5">Resume Builder</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 overflow-y-auto py-4">
+      <ul class="space-y-0.5 px-2">
+
+        {% set nav_items = [
+          ("🏠", "Dashboard", "/"),
+          ("👤", "Profile",   "/profile"),
+          ("⚡", "Skills",    "/skills"),
+          ("📁", "Projects",  "/projects"),
+          ("💼", "Experience","/experience"),
+          ("🎓", "Education", "/education"),
+          ("🏆", "Certifications", "/certifications"),
+          ("📄", "Resume",    "/resume"),
+        ] %}
+
+        {% for icon, label, href in nav_items %}
+        <li>
+          <a href="{{ href }}"
+             class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors
+                    {% if request.url.path == href %}
+                      bg-indigo-600 text-white
+                    {% else %}
+                      text-slate-300 hover:bg-slate-800 hover:text-white
+                    {% endif %}">
+            <span class="text-base leading-none">{{ icon }}</span>
+            <span>{{ label }}</span>
+          </a>
+        </li>
+        {% endfor %}
+
+      </ul>
+    </nav>
+
+    <!-- Footer hint -->
+    <div class="px-5 py-4 border-t border-slate-700 text-xs text-slate-500">
+      fitFolio v0.1
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN CONTENT AREA
+  ============================================================ -->
+  <div class="ml-56 flex-1 flex flex-col min-h-screen">
+
+    <!-- Top bar -->
+    <header class="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-30">
+      <h1 class="text-lg font-semibold text-slate-800">{% block page_title %}fitFolio{% endblock %}</h1>
+      <div class="flex items-center gap-3">
+        {% block header_actions %}{% endblock %}
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="flex-1 px-8 py-8">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- ============================================================
+       TOAST NOTIFICATION AREA (Alpine.js)
+  ============================================================ -->
+  <div
+    x-data="{
+      toasts: [],
+      add(msg, type='success') {
+        const id = Date.now();
+        this.toasts.push({ id, msg, type });
+        setTimeout(() => this.remove(id), 4000);
+      },
+      remove(id) {
+        this.toasts = this.toasts.filter(t => t.id !== id);
+      }
+    }"
+    x-on:show-toast.window="add($event.detail.msg, $event.detail.type)"
+    class="fixed top-4 right-4 z-50 flex flex-col gap-2"
+    id="toast-container"
+  >
+    <template x-for="toast in toasts" :key="toast.id">
+      <div
+        x-show="true"
+        class="flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg text-sm font-medium min-w-64"
+        :class="{
+          'bg-green-600 text-white': toast.type === 'success',
+          'bg-red-600 text-white': toast.type === 'error',
+          'bg-amber-500 text-white': toast.type === 'warning',
+          'bg-slate-700 text-white': toast.type === 'info'
+        }"
+      >
+        <span x-text="toast.msg" class="flex-1"></span>
+        <button @click="remove(toast.id)" class="opacity-70 hover:opacity-100 text-lg leading-none">&times;</button>
+      </div>
+    </template>
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

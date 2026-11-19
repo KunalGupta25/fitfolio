@@ -1,0 +1,93 @@
+<div class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm space-y-6">
+  <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div>
+      <h3 class="text-sm font-bold text-slate-800">2. JD Requirements & Profile Alignment</h3>
+      <p class="text-xs text-slate-500 mt-0.5">Detected Seniority: <span class="font-semibold uppercase text-indigo-600">{{ seniority | default('fresher') }}</span></p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Required Skills Alignment -->
+    <div>
+      <h4 class="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Required Skills</h4>
+      {% if scored_required %}
+        <ul class="space-y-1.5 text-xs">
+          {% for item in scored_required %}
+            <li class="flex items-center justify-between p-2 rounded {% if item.in_profile %}bg-emerald-50 text-emerald-800 border border-emerald-100{% else %}bg-rose-50 text-rose-800 border border-rose-100{% endif %}">
+              <span>{{ item.skill }}</span>
+              <span class="text-[10px] font-semibold">
+                {% if item.validated %}
+                  ✅ Validated
+                {% elif item.in_profile %}
+                  ✓ In Profile (Self-reported)
+                {% else %}
+                  ❌ Missing from Profile
+                {% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-xs text-slate-400 italic">No specific required skills extracted.</p>
+      {% endif %}
+    </div>
+
+    <!-- Preferred Skills Alignment -->
+    <div>
+      <h4 class="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Preferred / Nice-to-Have Skills</h4>
+      {% if scored_preferred %}
+        <ul class="space-y-1.5 text-xs">
+          {% for item in scored_preferred %}
+            <li class="flex items-center justify-between p-2 rounded {% if item.in_profile %}bg-slate-100 text-slate-800{% else %}bg-slate-50 text-slate-500{% endif %}">
+              <span>{{ item.skill }}</span>
+              <span class="text-[10px]">
+                {% if item.in_profile %}✓ Found{% else %}Not found{% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-xs text-slate-400 italic">No preferred skills extracted.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Role Keywords -->
+  {% if role_keywords %}
+    <div class="border-t border-slate-100 pt-4">
+      <h4 class="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Extracted ATS Keywords</h4>
+      <div class="flex flex-wrap gap-1.5">
+        {% for kw in role_keywords %}
+          <span class="bg-indigo-50 text-indigo-700 border border-indigo-100 text-[11px] font-mono px-2 py-0.5 rounded">
+            {{ kw }}
+          </span>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Generate Button Form -->
+  <div class="border-t border-slate-100 pt-4 flex items-center justify-between">
+    <div class="text-xs text-slate-500">
+      <p>💡 fitFolio will only include technologies that exist in your profile database.</p>
+    </div>
+
+    <form
+      hx-post="/resume/generate"
+      hx-target="#generation-container"
+      hx-swap="innerHTML"
+    >
+      <input type="hidden" name="jd_text" value="{{ jd_text }}" />
+      <input type="hidden" name="jd_role" value="{{ jd_role | default('') }}" />
+      <input type="hidden" name="jd_company" value="{{ jd_company | default('') }}" />
+      <input type="hidden" name="max_pages" value="{{ max_pages | default(2) }}" />
+
+      <button
+        type="submit"
+        class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-6 py-2 rounded-md transition-colors shadow-sm flex items-center gap-1.5"
+      >
+        <span>⚡ Draft & Compile Resume (LaTeX)</span>
+      </button>
+    </form>
+  </div>
+</div>
